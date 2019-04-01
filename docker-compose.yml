@@ -1,0 +1,45 @@
+version: '3'
+services:
+  docker-front:
+    image: "docker-front:3"
+    restart: always
+    ports:
+      - 4000:80
+    networks:
+      - server
+      - front
+    #  - traefik_proxy
+    #labels:
+    #  - "traefik.frontend.rule=Host:default.iss.${SERVER_DOMAIN},elotech.iss.${SERVER_DOMAIN},barbosaferraz.iss.${SERVER_DOMAIN},campinagrandedosul.iss.${SERVER_DOMAIN},angulo.iss.${SERVER_DOMAIN}"
+    #  - "traefik.docker.network=traefik_proxy"
+    #  - "traefik.enable=true"
+    #  - "traefik.port=80"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+  docker-server:
+    image: "docker-server:1"
+    restart: always
+    networks:
+      - server
+    environment:
+#      - ELOTECH_HOME=/etc/elotech
+      - RUN_ARGS=--debug
+      - SPRING_PROFILES_ACTIVE=production
+      - JAVA_OPTS=-Xmx2048M -Duser.country=BR -Duser.language=pt -Duser.timezone=America/Sao_Paulo
+#    volumes:
+#    - /etc/elotech:/etc/elotech
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  server:
+  front:
+  #traefik_proxy:
+  #  external:
+  #    name: traefik_proxy
